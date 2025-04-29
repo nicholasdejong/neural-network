@@ -1,5 +1,5 @@
 import numpy as np
-from activation import Tanh, Linear
+from activation import Linear
 from cost import DefaultCost
 
 class NeuralNetwork():
@@ -7,7 +7,7 @@ class NeuralNetwork():
     biases = []
     activations = [Linear]
     layers = []
-    learning_rate = 0.005
+    _learning_rate = 0.005
     _cost = DefaultCost
     L = 0
     def __init__(self, layers) -> None:
@@ -30,6 +30,9 @@ class NeuralNetwork():
     def activation(self, act, i):
         self.activations[i] = act
 
+    def learning_rate(self, x):
+        self.learning_rate = x
+
     def cost(self, test):
         """ Return the cost of the NN """
         sum = 0
@@ -50,9 +53,9 @@ class NeuralNetwork():
             acts += [act_next]
         return xs[len(xs)-1]
 
-    def train(self, batch, epocs):
+    def train(self, batch, epochs):
         """ Train the Neural Network with data in `batch`. """
-        for _ in range(epocs):
+        for _ in range(epochs):
             L = self.L
             delta_weights = [
                 np.zeros((self.layers[i], self.layers[i+1]))
@@ -64,21 +67,19 @@ class NeuralNetwork():
                 xs = [x]
                 acts = [x] # List of activated layers
                 for i in range(1, L+1):
-                    x_next = np.matmul(xs[i-1], self.weights[i-1]) + self.biases[i-1]
+                    x_next = xs[i-1] @ self.weights[i-1] + self.biases[i-1]
                     xs += [x_next]
                     act_next = self.activations[i].forward(x_next)
                     acts += [act_next]
                 # Backward propagation
-                cost_wrt_z = DefaultCost.backward(y, acts[L])
+                cost_wrt_z = self._cost.backward(y, acts[L])
                 for i in range(L, 0, -1):
                     act = self.activations[i].backward(xs[i])
-                    # print(act)
-                    # act = act.reshape((1, np.shape(act)[0]))
                     cost_wrt_x = cost_wrt_z * act
                     cost_wrt_w = np.transpose(acts[i-1]) @ cost_wrt_x
                     cost_wrt_b = cost_wrt_x
-                    delta_weights[i-1] += cost_wrt_w * self.learning_rate
-                    delta_biases[i-1]  += cost_wrt_b * self.learning_rate
+                    delta_weights[i-1] += cost_wrt_w * self._learning_rate
+                    delta_biases[i-1]  += cost_wrt_b * self._learning_rate
                     cost_wrt_z = (cost_wrt_z * act) @ np.transpose(self.weights[i-1])
 
             for i in range(len(delta_weights)):
@@ -88,9 +89,4 @@ class NeuralNetwork():
                 self.biases[i] += delta_biases[i]
 
 
-
-nn = NeuralNetwork([2,3,2])
-nn.activation(Tanh, 1)
-nn.train([[np.array([[0,1]]), np.array([[1,2]])]], epochs=100)
-print(nn.cost([[np.array([[0,1]]), np.array([[1,2]])]]))
 
