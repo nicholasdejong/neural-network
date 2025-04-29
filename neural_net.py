@@ -31,7 +31,7 @@ class NeuralNetwork():
         self.activations[i] = act
 
     def learning_rate(self, x):
-        self.learning_rate = x
+        self._learning_rate = x
 
     def cost(self, test):
         """ Return the cost of the NN """
