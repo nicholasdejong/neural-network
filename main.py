@@ -1,11 +1,7 @@
 from neural_net import NeuralNetwork
-from activation import Tanh, Leaky
 import numpy as np
 
-# nn = NeuralNetwork([2, 3, 3, 1])
 nn = NeuralNetwork([2, 1])
-# nn.activation(Tanh, 1)
-# nn.activation(Tanh, 2)
 
 nn.learning_rate(0.005)
 
@@ -15,7 +11,7 @@ dataset = []
 N = 50
 for _ in range(N):
     x = np.random.random((1, 2))
-    y = x.dot(np.array([[1],[1]])) # Add x's neurons together
+    y = np.array([[np.sum(x)]])
     dataset += [[x, y]]
 
 test = [[arr([0.5, 0.5]), arr([1])]] # 0.5 + 0.5 == 1
