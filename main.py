@@ -1,34 +1,31 @@
 from neural_net import NeuralNetwork
-from activation import Tanh
+from activation import Tanh, Leaky
 import numpy as np
 
-## Create a neural network with 3 layers:
-# Input layer with 2 neurons
-# Hidden layer with 3 neurons
-# Output layer with 1 neuron
-nn = NeuralNetwork([2,3,1])
-# Tell the first layer (0-indexed) to use the Tanh activation function
-nn.activation(Tanh, 1)
+# nn = NeuralNetwork([2, 3, 3, 1])
+nn = NeuralNetwork([2, 1])
+# nn.activation(Tanh, 1)
+# nn.activation(Tanh, 2)
 
-# Set the learning rate (defaults to 0.005)
 nn.learning_rate(0.005)
 
-# Define the data set to use
-# Let's try the XOR Dataset!
 def arr(x): return np.array([x])
-dataset = [
-    [arr([0, 0]), arr([0])],
-    [arr([0, 1]), arr([1])],
-    [arr([1, 0]), arr([1])],
-    [arr([1, 1]), arr([0])]
-]
 
-# Train our Neural Network on our dataset for 100 epochs.
-nn.train(dataset, epochs=100)
+dataset = []
+N = 50
+for _ in range(N):
+    x = np.random.random((1, 2))
+    y = x.dot(np.array([[1],[1]])) # Add x's neurons together
+    dataset += [[x, y]]
 
-test = [[arr([0, 1]), arr([1])]]
+test = [[arr([0.5, 0.5]), arr([1])]] # 0.5 + 0.5 == 1
+
 cost = nn.cost(test)
-print("Cost: ", cost) # We want to try to minimize this.
+print("Cost Before: ", cost)
+nn.train(dataset, epochs=500)
+
+cost = nn.cost(test)
+print("Cost After: ", cost) # We want to try to minimize this.
 
 # Print the NN's prediction for the first testcase.
 print(nn.forward(test[0][0])) # Should be close to 1
