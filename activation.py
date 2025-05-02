@@ -1,11 +1,6 @@
 ### Contains some Activation Functions for you to use.
 ### An implemented activation function needs a
 ### first derivative as well, for backpropagation purposes.
-### Your activation function needs to be vectorized- in
-### other words, it actually accepts a vector, not a
-### single number. Don't worry, with numpy this is really
-### easy. Take a look at some predefined examples to see
-### what I mean.
 
 import numpy as np
 
@@ -15,11 +10,11 @@ class Activation:
         self._forward = forward # f(x)
         self._backward = backward # f'(x)
 
-    def forward(self, x):
-        return self._forward(x)
+    def forward(self, f):
+        return self._forward(f)
 
-    def backward(self, x):
-        return self._backward(x)
+    def backward(self, fp):
+        return self._backward(fp)
 
 ### Example: Hyperbolic Tangent ###
 def tanh(x):
@@ -41,4 +36,15 @@ def linear_prime(x):
     return np.ones((1, np.shape(x)[1]))
 
 Linear = Activation(linear, linear_prime)
+##############################################
+
+C = 0.1 # Leak factor
+
+def leaky(x):
+    return np.maximum(x, x * C)
+
+def leaky_prime(x):
+    return 0.5 * ((1 - C) * np.sign(x) + C + 1)
+
+Leaky = Activation(leaky, leaky_prime)
 ##############################################
