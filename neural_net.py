@@ -42,6 +42,14 @@ class NeuralNetwork():
         sum /= len(test)
         return sum
 
+    def softmax(self, x):
+        xL = self.forward(x)
+        sum = np.sum(xL)
+        res = np.zeros((1, np.shape(xL)[1]))
+        for (i, neuron) in enumerate(xL[0]):
+            res[0][i] = neuron / sum
+        return res
+
     def forward(self, x):
         L = self.L
         xs = [x]
@@ -82,11 +90,9 @@ class NeuralNetwork():
                     delta_biases[i-1]  += cost_wrt_b * self._learning_rate
                     cost_wrt_z = (cost_wrt_z * act) @ np.transpose(self.weights[i-1])
 
-            for i in range(len(delta_weights)):
+            for i in range(L):
                 self.weights[i] += delta_weights[i]
 
-            for i in range(len(delta_biases)):
+            for i in range(L):
                 self.biases[i] += delta_biases[i]
-
-
 
